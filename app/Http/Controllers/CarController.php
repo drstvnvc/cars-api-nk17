@@ -22,9 +22,17 @@ class CarController extends Controller
         $brand = $request->query('brand');
         $model = $request->query('model');
 
+        $sorting_criteria = $request->query('sort_by');
+        $sorting_order = $request->query('sort_order', 'asc');
+
         $cars = Car::searchByBrand($brand)
-            ->searchByModel($model)
-            ->paginate($per_page);
+            ->searchByModel($model);
+
+        if ($sorting_criteria) {
+            $cars->orderBy($sorting_criteria, $sorting_order);
+        }
+
+        $cars = $cars->paginate($per_page);
 
         return response()->json($cars);
     }
